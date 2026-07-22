@@ -7,6 +7,7 @@
     "node": ">=22"
   },
   "scripts": {
+    "postinstall": "prisma generate --schema=packages/db/prisma/schema.prisma",
     "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
@@ -22,6 +23,8 @@
     "prettier": "^3.4.2",
     "eslint": "^9.17.0",
     "typescript-eslint": "^8.19.0",
-    "dotenv-cli": "^7.4.4"
+    "dotenv-cli": "^7.4.4",
+    "prisma": "^5.22.0",
+    "next": "^15.1.0"
   }
 }
