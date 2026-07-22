@@ -1,0 +1,27 @@
+{
+  "name": "builderos",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.15.4",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "db:generate": "pnpm --filter @builderos/db run generate",
+    "db:migrate": "pnpm --filter @builderos/db run migrate:dev",
+    "db:seed": "pnpm --filter @builderos/db run seed",
+    "db:studio": "pnpm --filter @builderos/db run studio"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2",
+    "prettier": "^3.4.2",
+    "eslint": "^9.17.0",
+    "typescript-eslint": "^8.19.0",
+    "dotenv-cli": "^7.4.4"
+  }
+}

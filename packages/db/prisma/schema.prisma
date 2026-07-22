@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String      @id @default(cuid())
+  email      String      @unique
+  name       String?
+  isDemo     Boolean     @default(false)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  workspaces Workspace[]
+}
+
+model Workspace {
+  id          String             @id @default(cuid())
+  name        String
+  slug        String             @unique
+  ownerId     String
+  owner       User               @relation(fields: [ownerId], references: [id])
+  connections PluginConnection[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+}
+
+enum ConnectionStatus {
+  CONNECTED
+  ERROR
+  DISCONNECTED
+}
+
+model PluginConnection {
+  id                   String           @id @default(cuid())
+  workspaceId          String
+  workspace            Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  pluginSlug           String
+  status               ConnectionStatus @default(DISCONNECTED)
+  config               Json             @default("{}")
+  credentialsEncrypted String?
+  lastSyncedAt         DateTime?
+  lastSyncError        String?
+  snapshots            MetricSnapshot[]
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+
+  @@unique([workspaceId, pluginSlug])
+}
+
+enum SnapshotKind {
+  METRIC
+  EVENT
+}
+
+// value is nullable so purely-structural facts (e.g. "latest release") can live
+// in metadata with no numeric value, without needing a schema change per plugin.
+model MetricSnapshot {
+  id           String           @id @default(cuid())
+  connectionId String
+  connection   PluginConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  kind         SnapshotKind
+  key          String
+  value        Float?
+  metadata     Json?
+  occurredAt   DateTime         @default(now())
+  createdAt    DateTime         @default(now())
+
+  @@index([connectionId, key, occurredAt])
+}

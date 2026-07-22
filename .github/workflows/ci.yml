@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: "postgresql://builderos:builderos@localhost:5432/builderos"
+      REDIS_URL: "redis://localhost:6379"
+      SESSION_SECRET: "ci-placeholder-session-secret-not-used-in-prod"
+      CREDENTIAL_ENCRYPTION_KEY: "MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY="
+      OWNER_EMAIL: "owner@builderos.local"
+      OWNER_PASSWORD: "ci-placeholder"
+      NEXT_PUBLIC_APP_URL: "http://localhost:3000"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install
+      - run: pnpm --filter @builderos/db run generate
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm build
