@@ -9,13 +9,14 @@ datasource db {
 }
 
 model User {
-  id         String      @id @default(cuid())
-  email      String      @unique
-  name       String?
-  isDemo     Boolean     @default(false)
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-  workspaces Workspace[]
+  id                 String              @id @default(cuid())
+  email              String              @unique
+  name               String?
+  isDemo             Boolean             @default(false)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  workspaces         Workspace[]
+  accountConnections AccountConnection[]
 }
 
 model Workspace {
@@ -27,6 +28,8 @@ model Workspace {
   connections PluginConnection[]
   createdAt   DateTime           @default(now())
   updatedAt   DateTime           @updatedAt
+
+  @@unique([ownerId, name])
 }
 
 enum ConnectionStatus {
@@ -52,9 +55,43 @@ model PluginConnection {
   @@unique([workspaceId, pluginSlug])
 }
 
+// Mirrors PluginConnection/MetricSnapshot but keyed by ownerId instead of
+// workspaceId — for integrations that are account-wide (one per business,
+// e.g. Razorpay), not tied to any single project.
+model AccountConnection {
+  id                   String                  @id @default(cuid())
+  ownerId              String
+  owner                User                    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  pluginSlug           String
+  status               ConnectionStatus        @default(DISCONNECTED)
+  config               Json                    @default("{}")
+  credentialsEncrypted String?
+  lastSyncedAt         DateTime?
+  lastSyncError        String?
+  snapshots            AccountMetricSnapshot[]
+  createdAt            DateTime                @default(now())
+  updatedAt            DateTime                @updatedAt
+
+  @@unique([ownerId, pluginSlug])
+}
+
 enum SnapshotKind {
   METRIC
   EVENT
+}
+
+model AccountMetricSnapshot {
+  id           String            @id @default(cuid())
+  connectionId String
+  connection   AccountConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  kind         SnapshotKind
+  key          String
+  value        Float?
+  metadata     Json?
+  occurredAt   DateTime          @default(now())
+  createdAt    DateTime          @default(now())
+
+  @@index([connectionId, key, occurredAt])
 }
 
 // value is nullable so purely-structural facts (e.g. "latest release") can live

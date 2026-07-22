@@ -63,6 +63,18 @@ export async function connectPlugin(params: {
   }
 }
 
+export async function disconnectPlugin(params: { workspaceId: string; pluginSlug: string }): Promise<ConnectPluginResult> {
+  const connection = await prisma.pluginConnection.findUnique({
+    where: { workspaceId_pluginSlug: { workspaceId: params.workspaceId, pluginSlug: params.pluginSlug } },
+    include: { workspace: { include: { owner: true } } },
+  });
+  if (!connection) return { ok: false, error: "Not connected" };
+  if (connection.workspace.owner.isDemo) return { ok: true, demo: true, message: DEMO_BLOCKED_MESSAGE };
+
+  await prisma.pluginConnection.delete({ where: { id: connection.id } });
+  return { ok: true };
+}
+
 export async function syncPlugin(params: { workspaceId: string; pluginSlug: string }): Promise<SyncPluginResult> {
   const connection = await prisma.pluginConnection.findUnique({
     where: { workspaceId_pluginSlug: { workspaceId: params.workspaceId, pluginSlug: params.pluginSlug } },

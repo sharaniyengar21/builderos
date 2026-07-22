@@ -3,10 +3,12 @@
 import { motion } from "framer-motion";
 import { Folder } from "lucide-react";
 import { Card } from "./ui/card";
+import { MetricChip, type MetricChipData } from "./metric-chip";
 
 export interface WorkspaceListItem {
   id: string;
   name: string;
+  chips: MetricChipData[];
 }
 
 const container = {
@@ -31,6 +33,13 @@ export function WorkspaceGrid({ workspaces }: { workspaces: WorkspaceListItem[] 
           <Card className="h-full transition-colors duration-150 hover:border-white/[0.15] hover:bg-white/[0.05]">
             <Folder className="h-5 w-5 text-accent-electric" />
             <p className="mt-3 truncate text-sm font-medium text-ink-primary">{workspace.name}</p>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {workspace.chips.length === 0 ? (
+                <span className="text-xs text-ink-muted">No integrations connected</span>
+              ) : (
+                workspace.chips.map((chip) => <MetricChip key={chip.pluginSlug} {...chip} />)
+              )}
+            </div>
           </Card>
         </motion.a>
       ))}

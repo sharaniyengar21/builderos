@@ -38,12 +38,24 @@ importers:
       '@builderos/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@builderos/plugin-cloudflare':
+        specifier: workspace:*
+        version: link:../../packages/plugin-cloudflare
       '@builderos/plugin-github':
         specifier: workspace:*
         version: link:../../packages/plugin-github
+      '@builderos/plugin-npm':
+        specifier: workspace:*
+        version: link:../../packages/plugin-npm
+      '@builderos/plugin-razorpay':
+        specifier: workspace:*
+        version: link:../../packages/plugin-razorpay
       '@builderos/plugin-sdk':
         specifier: workspace:*
         version: link:../../packages/plugin-sdk
+      '@builderos/plugin-vercel':
+        specifier: workspace:*
+        version: link:../../packages/plugin-vercel
       framer-motion:
         specifier: ^12.0.0
         version: 12.42.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -110,7 +122,64 @@ importers:
         specifier: ^5.7.2
         version: 5.9.3
 
+  packages/plugin-cloudflare:
+    dependencies:
+      '@builderos/plugin-sdk':
+        specifier: workspace:*
+        version: link:../plugin-sdk
+      lucide-react:
+        specifier: ^0.544.0
+        version: 0.544.0(react@19.2.8)
+      react:
+        specifier: ^19.0.0
+        version: 19.2.8
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.2
+        version: 19.2.17
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+
   packages/plugin-github:
+    dependencies:
+      '@builderos/plugin-sdk':
+        specifier: workspace:*
+        version: link:../plugin-sdk
+      lucide-react:
+        specifier: ^0.544.0
+        version: 0.544.0(react@19.2.8)
+      react:
+        specifier: ^19.0.0
+        version: 19.2.8
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.2
+        version: 19.2.17
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+
+  packages/plugin-npm:
+    dependencies:
+      '@builderos/plugin-sdk':
+        specifier: workspace:*
+        version: link:../plugin-sdk
+      lucide-react:
+        specifier: ^0.544.0
+        version: 0.544.0(react@19.2.8)
+      react:
+        specifier: ^19.0.0
+        version: 19.2.8
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.2
+        version: 19.2.17
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+
+  packages/plugin-razorpay:
     dependencies:
       '@builderos/plugin-sdk':
         specifier: workspace:*
@@ -131,6 +200,25 @@ importers:
 
   packages/plugin-sdk:
     devDependencies:
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+
+  packages/plugin-vercel:
+    dependencies:
+      '@builderos/plugin-sdk':
+        specifier: workspace:*
+        version: link:../plugin-sdk
+      lucide-react:
+        specifier: ^0.544.0
+        version: 0.544.0(react@19.2.8)
+      react:
+        specifier: ^19.0.0
+        version: 19.2.8
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.2
+        version: 19.2.17
       typescript:
         specifier: ^5.7.2
         version: 5.9.3

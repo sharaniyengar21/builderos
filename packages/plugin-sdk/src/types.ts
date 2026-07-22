@@ -1,12 +1,27 @@
 export type PluginAuthStrategy =
+  | { type: "none" }
   | { type: "pat"; label: string; helpUrl?: string }
+  | { type: "basic"; usernameLabel: string; passwordLabel: string; helpUrl?: string }
   | { type: "oauth2"; authorizeUrl: string; tokenUrl: string; scopes: string[] };
+
+export interface PluginConfigField {
+  name: string;
+  label: string;
+  placeholder?: string;
+}
 
 export interface PluginMetadata {
   slug: string;
   name: string;
   description: string;
   auth: PluginAuthStrategy;
+  // Raw form fields connect() needs — e.g. GitHub: a repo URL; npm: a
+  // package name. connect() is responsible for parsing/normalizing these
+  // into whatever internal `config` shape it actually persists.
+  configFields: PluginConfigField[];
+  // Which metric key is the headline number shown compactly on the home
+  // dashboard, without rendering the plugin's full widget.
+  primaryMetricKey: string;
 }
 
 export interface MetricDefinition {
@@ -33,7 +48,8 @@ export interface ActionDefinition<TOutput = unknown> {
 
 export interface PluginConnectionContext {
   connectionId: string;
-  workspaceId: string;
+  // Absent for account-wide connections, which have no workspace.
+  workspaceId?: string;
   config: Record<string, unknown>;
   getCredential: () => Promise<string | null>;
 }
@@ -43,7 +59,7 @@ export interface ActionContext extends PluginConnectionContext {
 }
 
 export interface PluginConnectInput {
-  workspaceId: string;
+  workspaceId?: string;
   config: Record<string, unknown>;
   credential?: string;
 }

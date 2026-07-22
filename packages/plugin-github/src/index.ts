@@ -1,7 +1,9 @@
 import type { Plugin } from "@builderos/plugin-sdk";
 import { fetchRepoSnapshot, verifyRepoAccess } from "./client";
+import { parseGithubRepoUrl } from "./url";
 
 export { buildSnapshotFromMetrics, type RepoStatsSnapshot } from "./snapshot";
+export { parseGithubRepoUrl } from "./url";
 
 function requireString(config: Record<string, unknown>, key: string): string {
   const value = config[key];
@@ -21,6 +23,10 @@ export const githubPlugin: Plugin = {
       label: "Personal access token",
       helpUrl: "https://github.com/settings/tokens",
     },
+    configFields: [
+      { name: "repoUrl", label: "Repository URL", placeholder: "https://github.com/vercel/next.js" },
+    ],
+    primaryMetricKey: "github.stars",
   },
   metrics: [
     { key: "github.stars", label: "Stars", unit: "count" },
@@ -34,8 +40,8 @@ export const githubPlugin: Plugin = {
   widgets: [{ key: "repo-stats", title: "Repository stats" }],
 
   async connect(input) {
-    const owner = requireString(input.config, "owner");
-    const repo = requireString(input.config, "repo");
+    const repoUrl = requireString(input.config, "repoUrl");
+    const { owner, repo } = parseGithubRepoUrl(repoUrl);
     if (!input.credential) {
       throw new Error("A personal access token is required to connect a GitHub repository");
     }

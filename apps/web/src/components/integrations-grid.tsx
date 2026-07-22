@@ -1,15 +1,12 @@
-import { Package, Container, CreditCard, MessageSquare, Triangle, Cloud } from "lucide-react";
+import { Container, CreditCard, MessageSquare } from "lucide-react";
 import { comingSoonIntegrations, type ComingSoonIntegration } from "@/lib/coming-soon-integrations";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-const ICONS: Record<ComingSoonIntegration["iconName"], typeof Package> = {
-  Package,
+const ICONS: Record<ComingSoonIntegration["iconName"], typeof Container> = {
   Container,
   CreditCard,
   MessageSquare,
-  Triangle,
-  Cloud,
 };
 
 export function IntegrationsGrid() {

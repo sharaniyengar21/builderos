@@ -8,6 +8,7 @@ const VARIANT_CLASSES = {
   primary: "bg-gradient-brand text-white hover:opacity-90",
   secondary: "border border-white/[0.12] text-ink-primary hover:border-white/25 hover:bg-white/[0.05]",
   ghost: "text-ink-secondary hover:text-ink-primary",
+  danger: "border border-red-500/30 text-red-300 hover:bg-red-500/10",
 };
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {

@@ -10,13 +10,19 @@ export default async function NewWorkspacePage({
   searchParams: Promise<{ error?: string }>;
 }) {
   const { error } = await searchParams;
+  const errorMessage =
+    error === "duplicate-name"
+      ? "You already have a workspace with this name."
+      : error
+        ? "Please enter a name."
+        : null;
 
   return (
     <div className="mx-auto max-w-md">
       <h1 className="text-xl font-semibold text-ink-primary">New workspace</h1>
-      {error && (
+      {errorMessage && (
         <div className="mt-3">
-          <Alert kind="error">Please enter a name.</Alert>
+          <Alert kind="error">{errorMessage}</Alert>
         </div>
       )}
       <Card className="mt-6">

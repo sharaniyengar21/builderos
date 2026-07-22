@@ -4,6 +4,10 @@ export default {
   content: [
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
     "../../packages/plugin-github/src/**/*.{ts,tsx}",
+    "../../packages/plugin-npm/src/**/*.{ts,tsx}",
+    "../../packages/plugin-vercel/src/**/*.{ts,tsx}",
+    "../../packages/plugin-cloudflare/src/**/*.{ts,tsx}",
+    "../../packages/plugin-razorpay/src/**/*.{ts,tsx}",
   ],
   theme: {
     extend: {

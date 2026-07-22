@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { prisma } from "@builderos/db";
+import { prisma, Prisma } from "@builderos/db";
 import { getCurrentUser } from "@/lib/current-user";
 
 function slugify(name: string): string {
@@ -26,9 +26,17 @@ export async function createWorkspace(formData: FormData): Promise<void> {
     slug = `${baseSlug}-${++suffix}`;
   }
 
-  const workspace = await prisma.workspace.create({
-    data: { name, slug, ownerId: user.id },
-  });
+  let workspace;
+  try {
+    workspace = await prisma.workspace.create({
+      data: { name, slug, ownerId: user.id },
+    });
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      redirect("/workspaces/new?error=duplicate-name");
+    }
+    throw error;
+  }
 
   redirect(`/workspaces/${workspace.id}`);
 }
