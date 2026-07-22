@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Github, ExternalLink } from "lucide-react";
 import { buildSnapshotFromMetrics, type RepoStatsSnapshot } from "./snapshot";
 
 export interface RepoStatsWidgetProps {
@@ -22,9 +23,9 @@ interface SyncResponse {
 
 function StatTile({ label, value }: { label: string; value: number | null }) {
   return (
-    <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-4">
-      <div className="text-xs uppercase tracking-wide text-neutral-500">{label}</div>
-      <div className="mt-1 text-2xl font-semibold text-neutral-100">
+    <div className="rounded-lg border border-white/[0.08] bg-white/[0.03] p-4">
+      <div className="text-[11px] uppercase tracking-wider text-ink-muted">{label}</div>
+      <div className="stat-number-gradient mt-1 font-mono text-2xl font-semibold tabular-nums">
         {value === null ? "—" : value.toLocaleString()}
       </div>
     </div>
@@ -64,21 +65,27 @@ export function RepoStatsWidget({ workspaceId, owner, repo, initialSnapshot, las
   }
 
   return (
-    <div className="rounded-xl border border-neutral-800 bg-neutral-950 p-5">
+    <div className="glass-surface rounded-xl p-5">
       <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-sm font-medium text-neutral-300">
-            {owner}/{repo}
-          </h3>
-          <p className="text-xs text-neutral-500">
-            {syncedAt ? `Last synced ${new Date(syncedAt).toLocaleString()}` : "Not synced yet"}
-          </p>
+        <div className="flex items-center gap-2.5">
+          <Github className="h-5 w-5 text-ink-secondary" />
+          <div>
+            <h3 className="text-sm font-medium text-ink-primary">
+              {owner}/{repo}
+            </h3>
+            <p className="font-mono text-xs text-ink-muted">
+              {syncedAt ? `Last synced ${new Date(syncedAt).toLocaleString()}` : "Not synced yet"}
+            </p>
+          </div>
         </div>
         <button
           onClick={handleSync}
           disabled={isSyncing}
-          className="rounded-md bg-neutral-100 px-3 py-1.5 text-sm font-medium text-neutral-900 disabled:opacity-50"
+          className="inline-flex items-center gap-2 rounded-lg border border-white/[0.12] px-3.5 py-2 text-sm font-medium text-ink-primary transition-colors duration-150 hover:border-white/25 hover:bg-white/[0.05] disabled:cursor-not-allowed disabled:opacity-50"
         >
+          {isSyncing && (
+            <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" />
+          )}
           {isSyncing ? "Syncing…" : "Sync now"}
         </button>
       </div>
@@ -91,16 +98,25 @@ export function RepoStatsWidget({ workspaceId, owner, repo, initialSnapshot, las
       </div>
 
       {snapshot.latestRelease && (
-        <p className="mt-3 text-sm text-neutral-400">
-          Latest release:{" "}
-          <a href={snapshot.latestRelease.url} className="underline" target="_blank" rel="noreferrer">
-            {snapshot.latestRelease.tag}
-          </a>
-        </p>
+        <a
+          href={snapshot.latestRelease.url}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white/[0.06] px-3 py-1 text-xs text-ink-secondary hover:text-ink-primary"
+        >
+          Latest release {snapshot.latestRelease.tag}
+          <ExternalLink className="h-3 w-3" />
+        </a>
       )}
 
       {status.kind !== "idle" && (
-        <p className={`mt-3 text-sm ${status.kind === "error" ? "text-red-400" : "text-blue-400"}`}>
+        <p
+          className={`mt-3 rounded-lg border px-3 py-2 text-sm ${
+            status.kind === "error"
+              ? "border-red-500/20 bg-red-500/10 text-red-300"
+              : "border-accent-electric/20 bg-accent-electric/10 text-accent-electric"
+          }`}
+        >
           {status.message}
         </p>
       )}

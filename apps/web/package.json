@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "dotenv -e ../../.env -- next dev",
+    "dev": "dotenv -e ../../.env -- next dev -p 3001",
     "build": "dotenv -e ../../.env -- next build",
-    "start": "next start",
+    "start": "next start -p 3001",
     "lint": "eslint --config ../../eslint.config.js src",
     "typecheck": "tsc --noEmit"
   },
@@ -14,7 +14,9 @@
     "@builderos/db": "workspace:*",
     "@builderos/plugin-sdk": "workspace:*",
     "@builderos/plugin-github": "workspace:*",
+    "framer-motion": "^12.0.0",
     "jose": "^5.9.6",
+    "lucide-react": "^0.544.0",
     "next": "^15.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

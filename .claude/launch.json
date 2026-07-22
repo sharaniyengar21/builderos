@@ -5,7 +5,7 @@
       "name": "builderos-web",
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["dev"],
-      "port": 3000
+      "port": 3001
     }
   ]
 }

@@ -19,7 +19,7 @@ docker compose up -d          # postgres + redis
 pnpm install
 pnpm db:migrate
 pnpm db:seed
-pnpm dev                      # http://localhost:3000
+pnpm dev                      # http://localhost:3001
 ```
 
 Sign in with `OWNER_EMAIL` / `OWNER_PASSWORD` to create your own workspace and connect a real GitHub repo (a classic personal access token with no scopes is enough for public repos).

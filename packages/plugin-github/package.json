@@ -8,7 +8,8 @@
     "./widget": "./src/widget.tsx"
   },
   "dependencies": {
-    "@builderos/plugin-sdk": "workspace:*"
+    "@builderos/plugin-sdk": "workspace:*",
+    "lucide-react": "^0.544.0"
   },
   "peerDependencies": {
     "react": "^19.0.0"
