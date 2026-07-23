@@ -14,6 +14,7 @@ import { Card } from "@/components/ui/card";
 import { IntegrationsGrid } from "@/components/integrations-grid";
 import { DeleteProductButton } from "@/components/delete-product-button";
 import { DisconnectPluginButton } from "@/components/disconnect-plugin-button";
+import { AddConnectionMenu } from "@/components/add-connection-menu";
 import { deleteProduct } from "./actions";
 
 type ConnectionRow = {
@@ -95,13 +96,24 @@ export default async function ProductPage({ params }: { params: Promise<{ produc
     byPluginSlug.set(connection.pluginSlug, list);
   }
 
+  const addOptions = Object.values(plugins).map((plugin) => ({
+    slug: plugin.metadata.slug,
+    name: plugin.metadata.name,
+    description: plugin.metadata.description,
+    connected: (byPluginSlug.get(plugin.metadata.slug)?.length ?? 0) > 0,
+  }));
+
   return (
     <div className="mx-auto max-w-4xl">
-      <h1 className="text-xl font-semibold text-ink-primary">{product.name}</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-semibold text-ink-primary">{product.name}</h1>
+        <AddConnectionMenu productId={product.id} options={addOptions} />
+      </div>
 
       <div className="mt-6 flex flex-col gap-8">
         {Object.values(plugins).map((plugin) => {
           const connections = byPluginSlug.get(plugin.metadata.slug) ?? [];
+          if (connections.length === 0) return null;
 
           return (
             <div key={plugin.metadata.slug} className="flex flex-col gap-4">
@@ -118,24 +130,15 @@ export default async function ProductPage({ params }: { params: Promise<{ produc
                   )}
                 </div>
               ))}
-
-              <Card className="flex flex-col items-start gap-3">
-                <div>
-                  <p className="text-sm font-medium text-ink-primary">
-                    {connections.length === 0 ? `Connect ${plugin.metadata.name}` : `Add another ${plugin.metadata.name}`}
-                  </p>
-                  <p className="mt-1 text-xs text-ink-muted">{plugin.metadata.description}</p>
-                </div>
-                <a
-                  href={`/products/${product.id}/settings/${plugin.metadata.slug}`}
-                  className="inline-flex items-center gap-2 rounded-lg bg-gradient-brand px-3.5 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
-                >
-                  {connections.length === 0 ? `Connect ${plugin.metadata.name}` : `Add another`}
-                </a>
-              </Card>
             </div>
           );
         })}
+
+        {product.connections.length === 0 && (
+          <Card className="flex flex-col items-center gap-2 py-10 text-center">
+            <p className="text-sm text-ink-muted">No connections yet — use "Add connection" to connect a repo or package.</p>
+          </Card>
+        )}
       </div>
 
       <IntegrationsGrid />
