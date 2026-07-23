@@ -5,6 +5,7 @@ import { buildSnapshotFromMetrics as buildRazorpaySnapshot } from "@builderos/pl
 import { RazorpayRevenueWidget } from "@builderos/plugin-razorpay/widget";
 import { getCurrentUser } from "@/lib/current-user";
 import { buildChips } from "@/lib/rollup";
+import { plugins } from "@/lib/plugins";
 import { Card } from "@/components/ui/card";
 import { ProductGrid } from "@/components/product-grid";
 import { SyncAllButton } from "@/components/sync-all-button";
@@ -29,11 +30,22 @@ export default async function HomePage() {
   const razorpayConnection = connections.find((c) => c.pluginSlug === "razorpay" && c.productId === null);
   const syncUrls = connections.map((c) => `/api/connections/${c.id}/sync`);
 
-  const productCards = products.map((product) => ({
-    id: product.id,
-    name: product.name,
-    chips: buildChips(connections.filter((c) => c.productId === product.id)),
-  }));
+  const productCards = products.map((product) => {
+    const productConnections = connections.filter((c) => c.productId === product.id);
+    const connectedSlugs = new Set(productConnections.map((c) => c.pluginSlug));
+
+    return {
+      id: product.id,
+      name: product.name,
+      chips: buildChips(productConnections),
+      addOptions: Object.values(plugins).map((plugin) => ({
+        slug: plugin.metadata.slug,
+        name: plugin.metadata.name,
+        description: plugin.metadata.description,
+        connected: connectedSlugs.has(plugin.metadata.slug),
+      })),
+    };
+  });
 
   const aggregateChips = buildChips(connections);
 

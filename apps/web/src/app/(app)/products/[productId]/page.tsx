@@ -11,11 +11,18 @@ import { CloudflareStatsWidget } from "@builderos/plugin-cloudflare/widget";
 import { getCurrentUser } from "@/lib/current-user";
 import { plugins } from "@/lib/plugins";
 import { Card } from "@/components/ui/card";
+import { Alert } from "@/components/ui/alert";
 import { IntegrationsGrid } from "@/components/integrations-grid";
 import { DeleteProductButton } from "@/components/delete-product-button";
 import { DisconnectPluginButton } from "@/components/disconnect-plugin-button";
 import { AddConnectionMenu } from "@/components/add-connection-menu";
-import { deleteProduct } from "./actions";
+import { ProductNameEditor } from "@/components/product-name-editor";
+import { ConnectionFilter } from "@/components/connection-filter";
+import { renameProduct, deleteProduct } from "./actions";
+
+// Above this many connections of one plugin type, show a filter box —
+// below it, a filter box is just more UI than the list it's filtering.
+const FILTER_THRESHOLD = 5;
 
 type ConnectionRow = {
   id: string;
@@ -24,6 +31,22 @@ type ConnectionRow = {
   lastSyncedAt: Date | null;
   snapshots: { key: string; value: number | null; metadata: unknown }[];
 };
+
+function getSearchLabel(connection: ConnectionRow): string {
+  const config = connection.config as Record<string, string>;
+  switch (connection.pluginSlug) {
+    case "github":
+      return `${config.owner}/${config.repo}`;
+    case "npm":
+      return config.packageName ?? "";
+    case "vercel":
+      return config.projectName ?? "";
+    case "cloudflare":
+      return config.zoneName ?? "";
+    default:
+      return "";
+  }
+}
 
 function renderWidget(connection: ConnectionRow) {
   const config = connection.config as Record<string, string>;
@@ -72,11 +95,25 @@ function renderWidget(connection: ConnectionRow) {
   }
 }
 
-export default async function ProductPage({ params }: { params: Promise<{ productId: string }> }) {
+export default async function ProductPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ productId: string }>;
+  searchParams: Promise<{ error?: string }>;
+}) {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
   const { productId } = await params;
+  const { error } = await searchParams;
+  const errorMessage =
+    error === "duplicate-name"
+      ? "You already have a product with this name."
+      : error === "name-required"
+        ? "Please enter a name."
+        : null;
+
   const product = await prisma.product.findUnique({
     where: { id: productId },
     include: {
@@ -106,37 +143,55 @@ export default async function ProductPage({ params }: { params: Promise<{ produc
   return (
     <div className="mx-auto max-w-4xl">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-ink-primary">{product.name}</h1>
+        {user.isDemo ? (
+          <h1 className="text-xl font-semibold text-ink-primary">{product.name}</h1>
+        ) : (
+          <ProductNameEditor productId={product.id} name={product.name} action={renameProduct} />
+        )}
         <AddConnectionMenu productId={product.id} options={addOptions} />
       </div>
+
+      {errorMessage && (
+        <div className="mt-3">
+          <Alert kind="error">{errorMessage}</Alert>
+        </div>
+      )}
 
       <div className="mt-6 flex flex-col gap-8">
         {Object.values(plugins).map((plugin) => {
           const connections = byPluginSlug.get(plugin.metadata.slug) ?? [];
           if (connections.length === 0) return null;
 
+          const groupId = `connections-${plugin.metadata.slug}`;
+
           return (
             <div key={plugin.metadata.slug} className="flex flex-col gap-4">
-              {connections.map((connection) => (
-                <div key={connection.id}>
-                  {renderWidget(connection)}
-                  {!user.isDemo && (
-                    <div className="mt-2 flex justify-end">
-                      <DisconnectPluginButton
-                        disconnectUrl={`/api/connections/${connection.id}/disconnect`}
-                        name={plugin.metadata.name}
-                      />
-                    </div>
-                  )}
-                </div>
-              ))}
+              {connections.length > FILTER_THRESHOLD && (
+                <ConnectionFilter groupId={groupId} placeholder={`Filter ${plugin.metadata.name} connections…`} />
+              )}
+              <div id={groupId} className="flex flex-col gap-4">
+                {connections.map((connection) => (
+                  <div key={connection.id} data-search-label={getSearchLabel(connection)}>
+                    {renderWidget(connection)}
+                    {!user.isDemo && (
+                      <div className="mt-2 flex justify-end">
+                        <DisconnectPluginButton
+                          disconnectUrl={`/api/connections/${connection.id}/disconnect`}
+                          name={plugin.metadata.name}
+                        />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           );
         })}
 
         {product.connections.length === 0 && (
-          <Card className="flex flex-col items-center gap-2 py-10 text-center">
-            <p className="text-sm text-ink-muted">No connections yet — use "Add connection" to connect a repo or package.</p>
+          <Card className="flex flex-col items-center gap-3 py-10 text-center">
+            <p className="text-sm text-ink-muted">No connections yet.</p>
+            <AddConnectionMenu productId={product.id} options={addOptions} label="Connect your first integration" />
           </Card>
         )}
       </div>
