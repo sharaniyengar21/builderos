@@ -4,9 +4,10 @@ import { usePathname } from "next/navigation";
 
 function breadcrumbLabel(pathname: string): string {
   if (pathname === "/") return "Overview";
-  if (pathname === "/workspaces/new") return "New workspace";
-  if (pathname.match(/^\/workspaces\/[^/]+\/settings\/github/)) return "Connect GitHub";
-  if (pathname.match(/^\/workspaces\/[^/]+/)) return "Workspace";
+  if (pathname === "/products/new") return "New product";
+  if (pathname === "/settings/account/razorpay") return "Connect Razorpay";
+  if (pathname.match(/^\/products\/[^/]+\/settings\//)) return "Connect integration";
+  if (pathname.match(/^\/products\/[^/]+/)) return "Product";
   return "";
 }
 

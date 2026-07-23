@@ -5,7 +5,7 @@ import { Github, ExternalLink } from "lucide-react";
 import { buildSnapshotFromMetrics, type RepoStatsSnapshot } from "./snapshot";
 
 export interface RepoStatsWidgetProps {
-  workspaceId: string;
+  connectionId: string;
   owner: string;
   repo: string;
   initialSnapshot: RepoStatsSnapshot;
@@ -32,7 +32,7 @@ function StatTile({ label, value }: { label: string; value: number | null }) {
   );
 }
 
-export function RepoStatsWidget({ workspaceId, owner, repo, initialSnapshot, lastSyncedAt }: RepoStatsWidgetProps) {
+export function RepoStatsWidget({ connectionId, owner, repo, initialSnapshot, lastSyncedAt }: RepoStatsWidgetProps) {
   const [snapshot, setSnapshot] = useState(initialSnapshot);
   const [syncedAt, setSyncedAt] = useState(lastSyncedAt);
   const [status, setStatus] = useState<{ kind: "idle" | "info" | "error"; message?: string }>({ kind: "idle" });
@@ -42,7 +42,7 @@ export function RepoStatsWidget({ workspaceId, owner, repo, initialSnapshot, las
     setIsSyncing(true);
     setStatus({ kind: "idle" });
     try {
-      const response = await fetch(`/api/workspaces/${workspaceId}/plugins/github/sync`, { method: "POST" });
+      const response = await fetch(`/api/connections/${connectionId}/sync`, { method: "POST" });
       const data: SyncResponse = await response.json();
 
       if (!data.ok) {

@@ -49,6 +49,7 @@ export const vercelPlugin: Plugin = {
     }
     const project = await verifyProject(projectIdOrName, input.credential, teamId);
     return {
+      externalId: project.id,
       config: { projectId: project.id, projectName: project.name, teamId: teamId ?? null },
       credential: input.credential,
     };

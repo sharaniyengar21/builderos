@@ -43,7 +43,7 @@ export default async function LoginPage({
 
           <div className="mt-6 border-t border-white/[0.08] pt-6">
             <h2 className="text-sm font-medium text-ink-primary">Try the demo</h2>
-            <p className="mt-1 text-xs text-ink-muted">No signup — see a pre-populated workspace.</p>
+            <p className="mt-1 text-xs text-ink-muted">No signup — see a pre-populated product.</p>
             <form action={signInAsDemo} className="mt-4">
               <Button type="submit" variant="secondary" className="w-full">
                 Continue as Demo

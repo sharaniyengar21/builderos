@@ -2,17 +2,17 @@ import type { ReactNode } from "react";
 import { LayoutGrid } from "lucide-react";
 import { logout } from "@/app/login/actions";
 import { SidebarNavItem } from "./sidebar-nav-item";
-import { WorkspaceSwitcher, type WorkspaceSummary } from "./workspace-switcher";
+import { ProductSwitcher, type ProductSummary } from "./product-switcher";
 import { Badge } from "./ui/badge";
 import { Topbar } from "./topbar";
 
 export function AppShell({
   user,
-  workspaces,
+  products,
   children,
 }: {
   user: { email: string; isDemo: boolean };
-  workspaces: WorkspaceSummary[];
+  products: ProductSummary[];
   children: ReactNode;
 }) {
   return (
@@ -23,7 +23,7 @@ export function AppShell({
         </a>
 
         <div className="mt-6">
-          <WorkspaceSwitcher workspaces={workspaces} />
+          <ProductSwitcher products={products} />
         </div>
 
         <nav className="mt-4 flex flex-col gap-0.5">

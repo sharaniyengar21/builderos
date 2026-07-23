@@ -32,7 +32,7 @@ export const razorpayPlugin: Plugin = {
     }
     const credentials = splitCredential(input.credential);
     await verifyCredentials(credentials);
-    return { config: {}, credential: input.credential };
+    return { externalId: "primary", config: {}, credential: input.credential };
   },
 
   async sync(ctx) {

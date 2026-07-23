@@ -46,7 +46,7 @@ export const githubPlugin: Plugin = {
       throw new Error("A personal access token is required to connect a GitHub repository");
     }
     await verifyRepoAccess(owner, repo, input.credential);
-    return { config: { owner, repo }, credential: input.credential };
+    return { externalId: `${owner}/${repo}`.toLowerCase(), config: { owner, repo }, credential: input.credential };
   },
 
   async sync(ctx) {

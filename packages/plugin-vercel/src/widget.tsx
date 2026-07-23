@@ -5,7 +5,7 @@ import { Triangle, ExternalLink } from "lucide-react";
 import { buildSnapshotFromMetrics, type VercelStatsSnapshot } from "./snapshot";
 
 export interface VercelStatsWidgetProps {
-  workspaceId: string;
+  connectionId: string;
   projectName: string;
   initialSnapshot: VercelStatsSnapshot;
   lastSyncedAt: string | null;
@@ -39,7 +39,7 @@ function StatTile({ label, value }: { label: string; value: number | null }) {
   );
 }
 
-export function VercelStatsWidget({ workspaceId, projectName, initialSnapshot, lastSyncedAt }: VercelStatsWidgetProps) {
+export function VercelStatsWidget({ connectionId, projectName, initialSnapshot, lastSyncedAt }: VercelStatsWidgetProps) {
   const [snapshot, setSnapshot] = useState(initialSnapshot);
   const [syncedAt, setSyncedAt] = useState(lastSyncedAt);
   const [status, setStatus] = useState<{ kind: "idle" | "info" | "error"; message?: string }>({ kind: "idle" });
@@ -49,7 +49,7 @@ export function VercelStatsWidget({ workspaceId, projectName, initialSnapshot, l
     setIsSyncing(true);
     setStatus({ kind: "idle" });
     try {
-      const response = await fetch(`/api/workspaces/${workspaceId}/plugins/vercel/sync`, { method: "POST" });
+      const response = await fetch(`/api/connections/${connectionId}/sync`, { method: "POST" });
       const data: SyncResponse = await response.json();
 
       if (!data.ok) {

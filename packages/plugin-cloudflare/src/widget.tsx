@@ -5,7 +5,7 @@ import { Cloud } from "lucide-react";
 import { buildSnapshotFromMetrics, formatBytes, type CloudflareStatsSnapshot } from "./snapshot";
 
 export interface CloudflareStatsWidgetProps {
-  workspaceId: string;
+  connectionId: string;
   zoneName: string;
   initialSnapshot: CloudflareStatsSnapshot;
   lastSyncedAt: string | null;
@@ -29,7 +29,7 @@ function StatTile({ label, value }: { label: string; value: string | null }) {
   );
 }
 
-export function CloudflareStatsWidget({ workspaceId, zoneName, initialSnapshot, lastSyncedAt }: CloudflareStatsWidgetProps) {
+export function CloudflareStatsWidget({ connectionId, zoneName, initialSnapshot, lastSyncedAt }: CloudflareStatsWidgetProps) {
   const [snapshot, setSnapshot] = useState(initialSnapshot);
   const [syncedAt, setSyncedAt] = useState(lastSyncedAt);
   const [status, setStatus] = useState<{ kind: "idle" | "info" | "error"; message?: string }>({ kind: "idle" });
@@ -39,7 +39,7 @@ export function CloudflareStatsWidget({ workspaceId, zoneName, initialSnapshot, 
     setIsSyncing(true);
     setStatus({ kind: "idle" });
     try {
-      const response = await fetch(`/api/workspaces/${workspaceId}/plugins/cloudflare/sync`, { method: "POST" });
+      const response = await fetch(`/api/connections/${connectionId}/sync`, { method: "POST" });
       const data: SyncResponse = await response.json();
 
       if (!data.ok) {

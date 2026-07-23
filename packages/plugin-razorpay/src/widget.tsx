@@ -5,6 +5,7 @@ import { IndianRupee } from "lucide-react";
 import { buildSnapshotFromMetrics, type RazorpayStatsSnapshot } from "./snapshot";
 
 export interface RazorpayRevenueWidgetProps {
+  connectionId: string;
   initialSnapshot: RazorpayStatsSnapshot;
   lastSyncedAt: string | null;
 }
@@ -27,7 +28,7 @@ function formatCurrency(value: number | null, currency: string | null): string {
   }
 }
 
-export function RazorpayRevenueWidget({ initialSnapshot, lastSyncedAt }: RazorpayRevenueWidgetProps) {
+export function RazorpayRevenueWidget({ connectionId, initialSnapshot, lastSyncedAt }: RazorpayRevenueWidgetProps) {
   const [snapshot, setSnapshot] = useState(initialSnapshot);
   const [syncedAt, setSyncedAt] = useState(lastSyncedAt);
   const [status, setStatus] = useState<{ kind: "idle" | "info" | "error"; message?: string }>({ kind: "idle" });
@@ -37,7 +38,7 @@ export function RazorpayRevenueWidget({ initialSnapshot, lastSyncedAt }: Razorpa
     setIsSyncing(true);
     setStatus({ kind: "idle" });
     try {
-      const response = await fetch(`/api/account/plugins/razorpay/sync`, { method: "POST" });
+      const response = await fetch(`/api/connections/${connectionId}/sync`, { method: "POST" });
       const data: SyncResponse = await response.json();
 
       if (!data.ok) {

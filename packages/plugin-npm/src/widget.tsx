@@ -5,7 +5,7 @@ import { Package, ExternalLink } from "lucide-react";
 import { buildSnapshotFromMetrics, type NpmStatsSnapshot } from "./snapshot";
 
 export interface NpmStatsWidgetProps {
-  workspaceId: string;
+  connectionId: string;
   packageName: string;
   initialSnapshot: NpmStatsSnapshot;
   lastSyncedAt: string | null;
@@ -31,7 +31,7 @@ function StatTile({ label, value }: { label: string; value: number | null }) {
   );
 }
 
-export function NpmStatsWidget({ workspaceId, packageName, initialSnapshot, lastSyncedAt }: NpmStatsWidgetProps) {
+export function NpmStatsWidget({ connectionId, packageName, initialSnapshot, lastSyncedAt }: NpmStatsWidgetProps) {
   const [snapshot, setSnapshot] = useState(initialSnapshot);
   const [syncedAt, setSyncedAt] = useState(lastSyncedAt);
   const [status, setStatus] = useState<{ kind: "idle" | "info" | "error"; message?: string }>({ kind: "idle" });
@@ -41,7 +41,7 @@ export function NpmStatsWidget({ workspaceId, packageName, initialSnapshot, last
     setIsSyncing(true);
     setStatus({ kind: "idle" });
     try {
-      const response = await fetch(`/api/workspaces/${workspaceId}/plugins/npm/sync`, { method: "POST" });
+      const response = await fetch(`/api/connections/${connectionId}/sync`, { method: "POST" });
       const data: SyncResponse = await response.json();
 
       if (!data.ok) {

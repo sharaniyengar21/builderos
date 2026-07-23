@@ -35,7 +35,7 @@ export const npmPlugin: Plugin = {
   async connect(input) {
     const packageName = requireString(input.config, "packageName");
     await verifyPackageExists(packageName);
-    return { config: { packageName } };
+    return { externalId: packageName.toLowerCase(), config: { packageName } };
   },
 
   async sync(ctx) {

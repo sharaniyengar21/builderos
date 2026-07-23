@@ -42,7 +42,7 @@ export const cloudflarePlugin: Plugin = {
       throw new Error("A Cloudflare API token is required");
     }
     const zone = await verifyZone(zoneId, input.credential);
-    return { config: { zoneId: zone.id, zoneName: zone.name }, credential: input.credential };
+    return { externalId: zone.id, config: { zoneId: zone.id, zoneName: zone.name }, credential: input.credential };
   },
 
   async sync(ctx) {

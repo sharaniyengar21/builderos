@@ -13,7 +13,7 @@ export function IntegrationsGrid() {
   return (
     <section className="mt-10">
       <h2 className="text-sm font-medium text-ink-secondary">More integrations</h2>
-      <p className="mt-1 text-xs text-ink-muted">Coming soon — connect these to expand your workspace.</p>
+      <p className="mt-1 text-xs text-ink-muted">Coming soon — connect these to expand your product.</p>
 
       <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {comingSoonIntegrations.map((integration) => {

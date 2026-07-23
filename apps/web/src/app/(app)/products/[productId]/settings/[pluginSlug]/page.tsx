@@ -1,31 +1,34 @@
 import { notFound, redirect } from "next/navigation";
+import { prisma } from "@builderos/db";
 import { getCurrentUser } from "@/lib/current-user";
-import { accountPlugins } from "@/lib/account-plugins";
+import { plugins } from "@/lib/plugins";
 import { Alert } from "@/components/ui/alert";
 import { PluginConnectForm } from "@/components/plugin-connect-form";
-import { connectAccountGeneric } from "./actions";
+import { connectGeneric } from "./actions";
 
-export default async function AccountPluginSettingsPage({
+export default async function PluginSettingsPage({
   params,
   searchParams,
 }: {
-  params: Promise<{ pluginSlug: string }>;
+  params: Promise<{ productId: string; pluginSlug: string }>;
   searchParams: Promise<{ error?: string }>;
 }) {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
-  const { pluginSlug } = await params;
+  const { productId, pluginSlug } = await params;
   const { error } = await searchParams;
 
-  const plugin = accountPlugins[pluginSlug];
+  const product = await prisma.product.findUnique({ where: { id: productId } });
+  if (!product || product.ownerId !== user.id) notFound();
+
+  const plugin = plugins[pluginSlug];
   if (!plugin) notFound();
 
   return (
     <div className="mx-auto max-w-md">
       <h1 className="text-xl font-semibold text-ink-primary">Connect {plugin.metadata.name}</h1>
       <p className="mt-1 text-sm text-ink-muted">{plugin.metadata.description}</p>
-      <p className="mt-1 text-xs text-ink-muted">This connects once for your whole business, not per product.</p>
 
       {error && (
         <div className="mt-3">
@@ -34,7 +37,11 @@ export default async function AccountPluginSettingsPage({
       )}
 
       <div className="mt-6">
-        <PluginConnectForm metadata={plugin.metadata} action={connectAccountGeneric} hiddenFields={{ pluginSlug }} />
+        <PluginConnectForm
+          metadata={plugin.metadata}
+          action={connectGeneric}
+          hiddenFields={{ productId: product.id, pluginSlug }}
+        />
       </div>
     </div>
   );

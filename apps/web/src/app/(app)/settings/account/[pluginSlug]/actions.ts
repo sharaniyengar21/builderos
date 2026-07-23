@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/current-user";
-import { connectAccountPlugin } from "@/lib/account-plugin-actions";
+import { connectConnection } from "@/lib/connection-actions";
 import { accountPlugins } from "@/lib/account-plugins";
 import { buildCredentialFromFormData } from "@/lib/plugin-form";
 
@@ -20,7 +20,7 @@ export async function connectAccountGeneric(formData: FormData): Promise<void> {
   }
   const credential = buildCredentialFromFormData(plugin.metadata.auth, formData);
 
-  const result = await connectAccountPlugin({ ownerId: user.id, pluginSlug, config, credential });
+  const result = await connectConnection({ ownerId: user.id, productId: null, pluginSlug, plugin, config, credential });
 
   if (!result.ok) {
     redirect(`/settings/account/${pluginSlug}?error=${encodeURIComponent(result.error)}`);

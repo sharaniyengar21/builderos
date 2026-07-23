@@ -48,8 +48,8 @@ export interface ActionDefinition<TOutput = unknown> {
 
 export interface PluginConnectionContext {
   connectionId: string;
-  // Absent for account-wide connections, which have no workspace.
-  workspaceId?: string;
+  // Absent for account-wide connections, which have no product.
+  productId?: string;
   config: Record<string, unknown>;
   getCredential: () => Promise<string | null>;
 }
@@ -59,12 +59,18 @@ export interface ActionContext extends PluginConnectionContext {
 }
 
 export interface PluginConnectInput {
-  workspaceId?: string;
+  productId?: string;
   config: Record<string, unknown>;
   credential?: string;
 }
 
 export interface PluginConnectResult {
+  // Canonical identity of the external resource ("owner/repo", a package
+  // name, a project/zone id, or a constant like "primary" for plugins with
+  // no natural external identity). Lets the caller tell "reconnecting the
+  // same thing" apart from "connecting something new" without any
+  // plugin-specific logic outside the plugin itself.
+  externalId: string;
   config: Record<string, unknown>;
   credential?: string;
 }

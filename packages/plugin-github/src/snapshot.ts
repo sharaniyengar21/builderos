@@ -12,7 +12,7 @@ interface KeyedMetric {
   metadata?: unknown;
 }
 
-// Shared between the server-rendered workspace page (reading stored
+// Shared between the server-rendered product page (reading stored
 // MetricSnapshot rows) and the client widget (reading a live sync response) —
 // both just need "latest metric per key" turned into the stat-grid shape.
 export function buildSnapshotFromMetrics(metrics: KeyedMetric[]): RepoStatsSnapshot {
